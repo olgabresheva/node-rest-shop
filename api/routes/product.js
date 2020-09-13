@@ -1,37 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const Product = require('../models/product');
 
-router.get('/', (req, res, next) => {
-    Product.find()
-        .select('name price _id')
-        .exec()
-        .then(docs => {
-            const response = {
-                count: docs.length,
-                products: docs.map(doc => {
-                    return {
-                        name: doc.name,
-                        price: doc.price,
-                        _id: doc._id,
-                        request: {
-                            type: 'GET',
-                            url: 'http://localhost:3000/products/'+ doc._id
-                        }
-                    }
-                })
-            }
-            console.log(docs);
-            res.status(200).json(response);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).json({
-                error: err
-            })
-        })
-});
+const Product = require('../models/product');
 
 router.post('/', (req, res, next) => {
     const product = new Product({
@@ -61,6 +32,36 @@ router.post('/', (req, res, next) => {
             res.status(500).json({error: err})
         });
 
+});
+
+router.get('/', (req, res, next) => {
+    Product.find()
+        .select('name price _id')
+        .exec()
+        .then(docs => {
+            const response = {
+                count: docs.length,
+                products: docs.map(doc => {
+                    return {
+                        name: doc.name,
+                        price: doc.price,
+                        _id: doc._id,
+                        request: {
+                            type: 'GET',
+                            url: 'http://localhost:3000/products/'+ doc._id
+                        }
+                    }
+                })
+            }
+            console.log(docs);
+            res.status(200).json(response);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: err
+            })
+        })
 });
 
 router.get('/:productId', (req, res, next) => {
