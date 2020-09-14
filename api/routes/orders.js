@@ -6,12 +6,19 @@ const Order = require('../models/orders');
 const Product = require('../models/product');
 
 router.post('/', (req, res, next) => {
-    const order = new Order({
-        _id: mongoose.Types.ObjectId(),
-        product: req.body.productId,
-        quantity: req.body.quantity
-    })
-        .save()
+    Product.findById(req.body.productId)
+        .then(product => {
+            if (!product){
+                return res.status(404).json({
+                    message: 'Product Not Found'});
+            }
+            const order = new Order({
+                _id: mongoose.Types.ObjectId(),
+                product: req.body.productId,
+                quantity: req.body.quantity
+            })
+            return order.save()
+        })
         .then(result => {
             console.log(result);
             res.status(201).json({
@@ -40,6 +47,7 @@ router.get('/', (req, res, next) => {
     const productId = Product.findById(req.body.productId);
     Order.find()
         .select('_id product quantity')
+        .populate('product', 'name')
         .exec()
         .then(docs => {
             const response = {
@@ -68,14 +76,20 @@ router.get('/:orderId', (req, res, next) => {
     const id = req.params.orderId;
     Order.findById(id)
         .select('_id product quantity')
+        .populate('product')
         .exec()
-        .then(doc => {
+        .then(order => {
+            if (!order) {
+                res.status(404).json({
+                    message: 'Order Not Found'
+                })
+            }
             res.status(200).json({
                 message: 'Selected Order details',
-                order: doc,
+                order: order,
                 request: {
                     type: 'GET',
-                    url: 'http://localhost:3000/orders/' + id
+                    url: 'http://localhost:3000/orders/'
                 }
             })
         })

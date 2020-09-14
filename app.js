@@ -13,6 +13,7 @@ mongoose.connect('mongodb+srv://olga0810:' + process.env.MONGO_ATLAS_PW + '@clus
 mongoose.Promise = global.Promise;
 
 app.use(morgan('dev'));
+app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
