@@ -44,7 +44,6 @@ router.post('/', (req, res, next) => {
 
 
 router.get('/', (req, res, next) => {
-    const productId = Product.findById(req.body.productId);
     Order.find()
         .select('_id product quantity')
         .populate('product', 'name')
