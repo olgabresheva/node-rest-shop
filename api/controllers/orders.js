@@ -4,12 +4,13 @@ const Order = require('../models/orders');
 const Product = require('../models/product');
 
 
-exports.order_create = (req, res, next) => {
+exports.order_create = (req, res) => {
     Product.findById(req.body.productId)
         .then(product => {
-            if (!product){
+            if (!product) {
                 return res.status(404).json({
-                    message: 'Product Not Found'});
+                    message: 'Product Not Found'
+                });
             }
             const order = new Order({
                 _id: mongoose.Types.ObjectId(),
@@ -41,7 +42,7 @@ exports.order_create = (req, res, next) => {
         });
 };
 
-exports.order_get_all = (req, res, next) => {
+exports.order_get_all = (req, res) => {
     Order.find()
         .select('_id product quantity')
         .populate('product', 'name')
@@ -56,9 +57,11 @@ exports.order_get_all = (req, res, next) => {
                         quantity: doc.quantity,
                         request: {
                             type: 'GET',
-                            url: 'http://localhost:3000/orders/'+ doc._id
-                        }}
-                })}
+                            url: 'http://localhost:3000/orders/' + doc._id
+                        }
+                    }
+                })
+            }
             res.status(200).json(response);
         })
         .catch(err => {
@@ -69,7 +72,7 @@ exports.order_get_all = (req, res, next) => {
         })
 };
 
-exports.order_get_byId = (req, res, next) => {
+exports.order_get_byId = (req, res) => {
     const id = req.params.orderId;
     Order.findById(id)
         .select('_id product quantity')
@@ -96,7 +99,7 @@ exports.order_get_byId = (req, res, next) => {
         })
 };
 
-exports.order_delete = (req, res, next) => {
+exports.order_delete = (req, res) => {
     const id = req.params.orderId;
     Order.remove({_id: id})
         .exec()
